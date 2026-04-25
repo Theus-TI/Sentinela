@@ -1,0 +1,16 @@
+2026-04-24 21:13:28,610 - INFO - Baseline gerada. 11 arquivos indexados de /home/matheus/Documentos/TESTE/.
+2026-04-24 21:13:41,129 - INFO - Monitoramento FIM iniciado no diretório: /home/matheus/Documentos/TESTE/
+2026-04-24 21:14:35,151 - CRITICAL - [CRÍTICO] INTEGRIDADE COMPROMETIDA. ARQUIVO MODIFICADO: /home/matheus/Documentos/TESTE/widget.css
+2026-04-24 21:14:47,158 - CRITICAL - [CRÍTICO] INTEGRIDADE COMPROMETIDA. ARQUIVO MODIFICADO: /home/matheus/Documentos/TESTE/widget.css
+2026-04-24 21:24:17,426 - WARNING - [ALERTA DE SEGURANÇA] ARQUIVO NOVO DETECTADO: /home/matheus/Documentos/TESTE/virus_teste.txt
+2026-04-24 21:32:42,412 - WARNING - Admin deletou permanentemente a ameaça: /home/matheus/Documentos/TESTE/virus_teste.txt
+2026-04-24 21:32:55,200 - WARNING - Admin deletou permanentemente a ameaça: /home/matheus/Documentos/TESTE/virus_teste.txt
+2026-04-24 21:39:53,514 - CRITICAL - [⚠️ ALARME DE REDE] NOVA PORTA ABERTA (4444)! Possível invasão de sistema / Backdoor ativo comunicando.
+2026-04-24 21:40:35,669 - CRITICAL - [⚠️ ALARME DE REDE] NOVA PORTA ABERTA (52741)! Possível invasão de sistema / Backdoor ativo comunicando.
+2026-04-24 21:42:35,954 - CRITICAL - [⚠️ ALARME DE REDE] NOVA PORTA ABERTA (46131)! Possível invasão de sistema / Backdoor ativo comunicando.
+2026-04-24 21:44:36,379 - CRITICAL - [⚠️ ALARME DE REDE] NOVA PORTA ABERTA (56115)! Possível invasão de sistema / Backdoor ativo comunicando.
+2026-04-24 21:45:57,125 - CRITICAL - [⚠️ ALARME DE REDE] NOVA PORTA ABERTA (4444)! Possível invasão de sistema / Backdoor ativo comunicando.
+2026-04-24 21:53:33,179 - CRITICAL - [⚠️ REDE ALERTA] Backdoor Escutando (4444)! Processo associado: nc PID: 13238
+2026-04-24 22:01:51,712 - CRITICAL - [⚠️ REDE ALERTA] Backdoor Escutando (6463)! Processo associado: Discord PID: 13487
+2026-04-24 22:08:05,760 - CRITICAL - [⚠️ REDE ALERTA] Backdoor Escutando (4444)! Processo associado: nc PID: 14315
+2026-04-24 22:14:24,774 - CRITICAL - [⚠️ REDE ALERTA] Backdoor Escutando (4444)! Processo associado: nc PID: 14782
