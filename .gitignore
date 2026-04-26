@@ -1,0 +1,10 @@
+# Arquivos de log e simulações
+sentinel_audit.log
+baseline.json
+malware_zero_day.sh
+
+# Área de Quarentena
+.quarentena/
+
+# Sentinel Enterprise (Módulo Pesado Wireshark/Watchdog)
+sentinel_enterprise.py

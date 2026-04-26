@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel EDR | Advanced Command Center</title>
+    <!-- Fontes Super Premium e Tecnologicas -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* DESIGN VIP 2026 CYBERPUNK/CORPORATE EDR */
+        :root {
+            --bg-color: #060913;
+            --panel-bg: rgba(14, 18, 34, 0.75);
+            --border: rgba(45, 204, 112, 0.15);
+            --border-danger: rgba(255, 42, 84, 0.3);
+            --text-main: #E2E8F0;
+            --text-dim: #64748B;
+            --green: #10B981; 
+            --green-glow: rgba(16, 185, 129, 0.4);
+            --red: #EF4444;
+            --red-glow: rgba(239, 68, 68, 0.6);
+            --blue: #3B82F6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.05), transparent 25%);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ---------------- SCROLLBAR CUSTOM ---------------- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        
+        /* ---------------- SIDEBAR OTIMIZADA ---------------- */
+        .sidebar {
+            width: 320px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand-header {
+            padding: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        
+        .pulse-dot { 
+            height: 10px; width: 10px; 
+            background: var(--green); 
+            border-radius: 50%; 
+            box-shadow: 0 0 15px var(--green); 
+            animation: pulse-green 2s infinite; 
+        }
+
+        .sidebar-section {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* HARDWARE STATUS LIST */
+        .engine-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .engine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .status-ok { background: rgba(16, 185, 129, 0.1); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-error { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .status-dot-ok { height: 6px; width: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green); }
+        .status-dot-err { height: 6px; width: 6px; border-radius: 50%; background: var(--red); box-shadow: 0 0 5px var(--red); }
+
+        /* RADAR SYSTEM IN SIDEBAR */
+        .radar-box { 
+            position: relative; 
+            width: 100%; 
+            padding-bottom: 100%;
+            background: rgba(16, 185, 129, 0.02); 
+            border: 1px solid var(--border); 
+            border-radius: 50%; 
+            overflow: hidden; 
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+            margin-top: 10px;
+        }
+        .radar-grid { 
+            position: absolute; inset: 0; 
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px); 
+            background-size: 20px 20px; 
+            border-radius: 50%;
+        }
+        .radar-sweep { 
+            position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; 
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 1)); 
+            transform-origin: left center; 
+            animation: spin 3s linear infinite; 
+        }
+        .radar-ring {
+            position: absolute; top: 25%; left: 25%; right: 25%; bottom: 25%;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        /* DYNAMIC RADAR ATTACK STATE */
+        .radar-box.radar-attack { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.5); box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.4), 0 0 20px rgba(239, 68, 68, 0.3); }
+        .radar-box.radar-attack .radar-grid { background-image: linear-gradient(rgba(239, 68, 68, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(239, 68, 68, 0.2) 1px, transparent 1px); }
+        .radar-box.radar-attack .radar-sweep { background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 1)); animation: spin 0.8s linear infinite; }
+        .radar-box.radar-attack .radar-ring { border-color: rgba(239, 68, 68, 0.5); box-shadow: inset 0 0 10px rgba(239,68,68,0.2); }
+
+        /* ---------------- MAIN CONTENT AREA ---------------- */
+        .main {
+            flex: 1;
+            padding: 40px 50px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .sys-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .sys-header h1 { font-size: 38px; margin: 0; font-weight: 900; letter-spacing: -1px; background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sys-header p { font-family: 'Share Tech Mono', monospace; color: var(--text-dim); margin: 5px 0 0 0; }
+        
+        /* Protection Shield */
+        .shield-badge {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--green);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .stat-card.danger::after { background: var(--red); box-shadow: 0 0 15px var(--red); }
+        .stat-card.safe::after { background: var(--blue); box-shadow: 0 0 15px var(--blue); }
+
+        .stat-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 54px;
+            font-weight: 900;
+            margin-top: 10px;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-card.danger .stat-value { color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
+
+        /* LIVE FEED */
+        .feed-container {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feed-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .feed-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+        .blinking-rec { height: 10px; width: 10px; background: var(--red); border-radius: 50%; animation: pulse-red 1s infinite; }
+
+        .feed-list {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .alert-row {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-left: 3px solid var(--red);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .alert-row:hover { background: rgba(0,0,0,0.5); transform: translateX(5px); border-color: rgba(255,255,255,0.1); }
+
+        .alert-info { display: flex; align-items: flex-start; gap: 15px; }
+        .alert-icon { font-size: 24px; filter: drop-shadow(0 0 5px rgba(255,0,0,0.5)); }
+        
+        .alert-text-box h4 { margin: 0 0 5px 0; color: #fff; font-size: 15px; }
+        .alert-text-box p { margin: 0; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 13px; }
+
+        .btn-kill {
+            background: transparent;
+            color: var(--red);
+            border: 1px solid var(--red);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-kill:hover { background: var(--red); color: #fff; box-shadow: 0 0 15px var(--red-glow); }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        @keyframes spin { 100% { transform: translateY(-50%) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="brand-header">
+            <div class="brand"><div class="pulse-dot"></div> SENTINEL OS</div>
+        </div>
+
+        <div class="sidebar-section" style="display:flex; justify-content:center;">
+            <div style="width: 80%;">
+                <div class="radar-box">
+                    <div class="radar-grid"></div>
+                    <div class="radar-ring"></div>
+                    <div class="radar-sweep"></div>
+                </div>
+                <div id="radar-title" style="text-align: center; margin-top: 15px; font-family: 'Share Tech Mono'; font-size: 11px; color: var(--green); letter-spacing: 2px; transition: color 0.3s;">
+                    NETWORK SCANNER
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Security Modules</div>
+            <div class="engine-list" id="engine-container">
+                <!-- Injetado Dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="main">
+        <div class="sys-header">
+            <div>
+                <h1>Global Threat Interface</h1>
+                <p>Advanced Persistent Threat Defense System</p>
+            </div>
+            <div class="shield-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                SECURITY ENFORCED
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Files Secured</div>
+                <div class="stat-value" id="stat-files">--</div>
+            </div>
+            <div class="stat-card safe">
+                <div class="stat-title">Packets Intercepted</div>
+                <div class="stat-value" id="stat-packets" style="color:var(--blue)">--</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="stat-title">Threats Quarantined</div>
+                <div class="stat-value" id="stat-threats">--</div>
+            </div>
+        </div>
+
+        <div class="feed-container">
+            <div class="feed-header">
+                <h3><div class="blinking-rec"></div> Live Threat Action Feed</h3>
+                <span style="font-family:'Share Tech Mono'; font-size:12px; color:var(--text-dim)">REAL-TIME UPDATES</span>
+            </div>
+            <div class="feed-list" id="alerts-container">
+                <!-- Conteúdo Injetado via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ENGINE REATIVO: Virtual DOM System
+        const engineContainer = document.getElementById('engine-container');
+        const alertContainer = document.getElementById('alerts-container');
+
+        async function fetchSentinelData() {
+            try {
+                const res = await fetch('http://127.0.0.1:1337/api/status');
+                const data = await res.json();
+                
+                document.getElementById('stat-files').innerText = data.monitored_files;
+                document.getElementById('stat-threats').innerText = data.threats_killed;
+                document.getElementById('stat-packets').innerText = data.packets_dropped;
+                
+                // ---- RENDER ENGINES SIDEBAR ----
+                let enginesHTML = '';
+                if(data.engines) {
+                    data.engines.forEach(eng => {
+                        const isOk = eng.status === "OK";
+                        enginesHTML += `
+                            <div class="engine-item">
+                                <span style="color:var(--text-main); font-size:12px;">${eng.name}</span>
+                                <div class="status-badge ${isOk ? 'status-ok' : 'status-error'}">
+                                    <div class="${isOk ? 'status-dot-ok' : 'status-dot-err'}"></div>
+                                    ${eng.status}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                if (engineContainer.innerHTML !== enginesHTML) engineContainer.innerHTML = enginesHTML;
+
+                // ---- RENDER ALERTS FEED ----
+                let alertsHTML = '';
+                if (data.alerts.length === 0) {
+                    alertsHTML = `
+                        <div class="empty-state">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:15px; opacity:0.5"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                            <span>NO ANOMALIES DETECTED IN PERIMETER</span>
+                        </div>
+                    `;
+                } else {
+                    data.alerts.forEach(alert => {
+                        alertsHTML += `
+                            <div class="alert-row">
+                                <div class="alert-info">
+                                    <span class="alert-icon">☠️</span>
+                                    <div class="alert-text-box">
+                                        <h4>${alert.title}</h4>
+                                        <p>${alert.desc}</p>
+                                    </div>
+                                </div>
+                                <button class="btn-kill" onclick="banThreat('${alert.id}')">EXTERMINATE</button>
+                            </div>
+                        `;
+                    });
+                }
+                
+                if (alertContainer.innerHTML !== alertsHTML) {
+                    alertContainer.innerHTML = alertsHTML;
+                }
+                
+                // INTEGRAÇÃO: O Radar de Rede se intensifica durante ameaças ativas ou drop do Firewall
+                const radarBox = document.querySelector('.radar-box');
+                const radarTitle = document.getElementById('radar-title');
+                const dropCount = String(data.packets_dropped);
+                
+                if (data.alerts.length > 0 || (radarBox.dataset.lastDrop && dropCount !== radarBox.dataset.lastDrop)) {
+                    radarBox.classList.add('radar-attack');
+                    radarTitle.style.color = 'var(--red)';
+                    if (data.alerts.length === 0) {
+                        radarTitle.innerText = "PACKET BLOCKED";
+                        setTimeout(() => { if(document.getElementById('radar-title')) document.getElementById('radar-title').innerText = "NETWORK SCANNER"; }, 1000);
+                    } else {
+                        radarTitle.innerText = "THREAT ISOLATED";
+                    }
+                } else {
+                    radarBox.classList.remove('radar-attack');
+                    radarTitle.style.color = 'var(--green)';
+                    radarTitle.innerText = "NETWORK SCANNER";
+                }
+                
+                radarBox.dataset.lastDrop = dropCount;
+
+            } catch (error) {
+                console.log("Aguardando Python Sentinel API responder na porta 1337...");
+            }
+        }
+        
+        async function banThreat(id) {
+            await fetch('http://127.0.0.1:1337/api/kill', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ threat_id: id })
+            });
+            fetchSentinelData();
+        }
+        
+        // Polling 2 vezes por segundo: Zero-Delay
+        fetchSentinelData();
+        setInterval(fetchSentinelData, 500);
+    </script>
+</body>
+</html>
