@@ -21,34 +21,39 @@ O projeto **Sentinel EDR** atua em duas frentes vitais (Air-gapped):
 
 ---
 
-## 🚀 Capacidades Oficiais (Architecture)
-A estrutura do projeto repousa **100% sobre a Python Standard Library** — Desenvolvido de forma autônoma para ambientes Dry-Containers e Servidores Críticos de Cloud que não possuem Luxo de pacotes `pip` na internet.
+## 🚀 Capacidades Oficiais (Architecture V9)
+A estrutura principal do projeto foi projetada para ambientes Táticos, unindo a Portabilidade de Bibliotecas padrão Python à eficiência de APIs de Segurança.
 
-*   **🛡️ Active Defense PIDs (KILL-SWITCH):** Se um Backdoor é ativado (ex: Netcat Bind Shell na porta 4444), o sistema reverte sockets p/ Inodes do Kernel, rastreia os "File Descriptors" físicos e assassina (`SIGKILL -9`) a intrusão instantaneamente.
-*   **🦠 Threat Intel (VirusTotal API v3):** Se um arquivo estranho surgir (ex: Zero-Day Drops), o Sentinel isola o Hash OOM-Safe e consome a REST API global do VirusTotal. Com a detecção positivada (e.g., Spyware, Ransomware), disparamos `chmod 000` confinando a ameaça em Área de Quarentena.
-*   **🧩 Criptografia SHA-512 FIM:** Perfis estritos na memória base com chaves indecifráveis para evitar bypasses de Blue Team clássicos de malwares evasivos.
+*   **🌐 C2 Web Dashboard (Dual-Control):** Uma interface moderna administrativa operando sob arquitetura em tempo real. O Analista de SOC pode monitorar a máquina, ver PIDs maliciosos e apertar o botão de "Extermínio" sem tocar no terminal.
+*   **🧬 Motor YARA Local:** Identificação ultrarrápida (Pattern Matching estático) mapeando assinaturas hexadecimais de Ameaças Famosas (APTs, Ransomwares).
+*   **🛡️ Active Defense PIDs (KILL-SWITCH):** O clássico HIDS. O Sentinel reverte sockets suspeitos direto do Kernel (`/proc/net/tcp`), mapeia FD nodes e extirpa o atacante assincronamente (evitando sistema travado).
+*   **🦠 Threat Intel (VirusTotal API v3):** Camada de defesa secundária na nuvem para varredura de Zero-Days com Sandboxing e Quarentena agressiva automática.
+*   **🧩 FIM O(1) e Criptografia:** Monitor de Integridade de disco (SHA-512) reescrito utilizando Hashes em Sets (O(1)) para otimização radical de recursos da máquina monitorada.
 
 ---
 
-## 🕹️ Testes de Invasão Pessoal (Hands-On)
+## 🕹️ Usabilidade Em Tempo Real (Dual-Control)
 
-1. **Inicie sua Baseline limpa de Portas e Hashs**
+1. **Inicialização Conjunta (Sentinel + Web Server)**
 ```bash
-./sentinel.py -m /seu/diretorio/importante/
+./sentinel.py -m /diretorio/protegido/
 ```
+> *Nota: O Dashboard Web será iniciado simultaneamente. Abra (127.0.0.1:8000/dashboard/index.html) em seu navegador.* 📊
 
-2. **Simule a Invasão por Portas (Side B: Red Team)**
+2. **Simulando um Ataque de Rede (Red Team)**
 ```bash
-# Abra uma nova aba de terminal e ouça como um Cavalo de Troia
+# Finja ser um atacante abrindo uma Shell reversa/Bind:
 nc -lvnp 4444
 ```
 
-3. **Reação do Sentinel em Tempo real:**
+3. **Resposta a Incidente Integrada:**
+*   No **Dashboard**, um sinal de Card Crítico aparecerá identificando o netcat com Botões interativos para Abortar Processo.
+*   No **Terminal Host**, o aviso reativo irá pipocar:
 ```bash
 [⚠️ REDE ALERTA] Backdoor Escutando (4444)!
   └─> 🔬 Forense: Processo [nc] operando no PID (13238)
-  └─> ⚠️ EDR ATIVO: Deseja MATAR o programa suspeito 'nc' (PID 13238)? [S/N]: s
-  └─> 💥 ALVO DERRUBADO! Acesso do hacker extirpado do sistema.
+  └─> ⚠️ EDR Dual-Control (Via Web ou CLI). Deseja MATAR o processo suspeito? [S/N]: s
+  └─> 💥 ALVO DERRUBADO! (Resolução instantânea)
 ```
 
 ---
