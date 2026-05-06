@@ -107,9 +107,9 @@ Create `sentinel_config.json` (already in `.gitignore`):
 {
     "vt_api_key": "YOUR_KEY",
     "entropy_threshold": 7.9,
-    "trusted_ips": ["192.168.0.1", "127.0.0.1"],
-    "trusted_domains": ["ubuntu", "canonical", "google"],
-    "trusted_ip_ranges": ["185.125.", "91.189."],
+    "trusted_ips": ["10.0.0.1", "127.0.0.1"],
+    "trusted_domains": ["google.com", "microsoft.com"],
+    "trusted_ip_ranges": ["10.0.0.", "192.168."],
     "dashboard_port": 1337,
     "natural_entropy_extensions": ["png", "jpg", "zip", "pdf", "mp4"],
     "malicious_extensions": ["locked", "enc", "crypt", "ransom"]
