@@ -1,10 +1,26 @@
 # Arquivos de log e simulações
 sentinel_audit.log
+sentinel_audit.log.*
 baseline.json
 malware_zero_day.sh
+
+# Config com chaves API (NÃO commitar)
+sentinel_config.json
 
 # Área de Quarentena
 .quarentena/
 
+# Shadow Copies e Honeypots
+.sentinel_shadows/
+.system_cache/
+
+# Forensic Database
+sentinel_forensic.db
+
 # Sentinel Enterprise (Módulo Pesado Wireshark/Watchdog)
 sentinel_enterprise.py
+
+# Python
+__pycache__/
+*.pyc
+.venv/

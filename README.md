@@ -1,10 +1,13 @@
 <div align="center">
-  <img src="https://img.icons8.com/color/100/000000/cyber-security.png" width="100">
-  <h1>🛡️ Sentinel EDR - Active Defense System </h1>
-  <p><b>DevSecOps & Blue Team — Sistema de Detecção de Intrusão em Nuvem e Host (HIDS / FIM)</b></p>
+  <img src="https://img.icons8.com/color/100/000000/cyber-security.png" width="80">
+  <h1>🛡️ Sentinel EDR</h1>
+  <p><b>Advanced Host Intrusion Detection & Active Defense System</b></p>
+  <p><i>DevSecOps & Blue Team — HIDS / FIM / IPS / Threat Intel</i></p>
   
   <p>
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+    <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+    <img src="https://img.shields.io/badge/Version-10.0-00d4aa?style=for-the-badge" />
+    <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" />
     <img src="https://img.shields.io/badge/Architecture-SOC_Defense-black?style=for-the-badge" />
     <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge" />
   </p>
@@ -12,49 +15,119 @@
 
 ---
 
-## 📌 Contexto Organizacional
-Baseado nas exigências operacionais de um **Centro de Operações de Segurança (SOC)** moderno, proteger o perímetro não é suficiente. Invasões e Backdoors muitas vezes escapam ao firewall.
+## 📌 Overview
 
-O projeto **Sentinel EDR** atua em duas frentes vitais (Air-gapped):
-1. **[FIM] Monitor de Integridade de Arquivos:** Rastreador de Malware por Hashes de disco.
-2. **[HIDS] Análise de Rede com Resposta Ativa:** Engenharia reversa no Kernel Linux (`/proc/net/tcp`) para derrubar portas e processos Bind executados por criminosos.
+Modern SOC operations demand more than perimeter firewalls. **Sentinel EDR** is an open-source endpoint defense system that detects intrusions, neutralizes threats, and provides real-time forensic telemetry through a web command center.
 
----
-
-## 🚀 Capacidades Oficiais (Architecture V9)
-A estrutura principal do projeto foi projetada para ambientes Táticos, unindo a Portabilidade de Bibliotecas padrão Python à eficiência de APIs de Segurança.
-
-*   **🌐 C2 Web Dashboard (Dual-Control):** Uma interface moderna administrativa operando sob arquitetura em tempo real. O Analista de SOC pode monitorar a máquina, ver PIDs maliciosos e apertar o botão de "Extermínio" sem tocar no terminal.
-*   **🧬 Motor YARA Local:** Identificação ultrarrápida (Pattern Matching estático) mapeando assinaturas hexadecimais de Ameaças Famosas (APTs, Ransomwares).
-*   **🛡️ Active Defense PIDs (KILL-SWITCH):** O clássico HIDS. O Sentinel reverte sockets suspeitos direto do Kernel (`/proc/net/tcp`), mapeia FD nodes e extirpa o atacante assincronamente (evitando sistema travado).
-*   **🦠 Threat Intel (VirusTotal API v3):** Camada de defesa secundária na nuvem para varredura de Zero-Days com Sandboxing e Quarentena agressiva automática.
-*   **🧩 FIM O(1) e Criptografia:** Monitor de Integridade de disco (SHA-512) reescrito utilizando Hashes em Sets (O(1)) para otimização radical de recursos da máquina monitorada.
-
----
-
-## 🕹️ Usabilidade Em Tempo Real (Dual-Control)
-
-1. **Inicialização Conjunta (Sentinel + Web Server)**
-```bash
-./sentinel.py -m /diretorio/protegido/
-```
-> *Nota: O Dashboard Web será iniciado simultaneamente. Abra (127.0.0.1:8000/dashboard/index.html) em seu navegador.* 📊
-
-2. **Simulando um Ataque de Rede (Red Team)**
-```bash
-# Finja ser um atacante abrindo uma Shell reversa/Bind:
-nc -lvnp 4444
+```mermaid
+graph LR
+    A[📁 File System] -->|inotify| B[Watchdog FIM]
+    B --> C{Threat Analysis}
+    C -->|Hash| D[SHA-256 Baseline]
+    C -->|Signatures| E[YARA Engine]
+    C -->|Heuristic| F[Entropy Scanner]
+    C -->|Cloud Intel| G[VirusTotal API]
+    H[🌐 Network] -->|/proc/net/tcp| I[HIDS Monitor]
+    I --> J[Port Anomaly Detection]
+    J -->|SIGSTOP| K[Process Freeze]
+    L[📡 Suricata] -->|eve.json| M[IPS Connector]
+    N[🔥 NFQueue] -->|Kernel| O[Packet Inspector]
+    C --> P[🖥️ Web Dashboard C2]
+    I --> P
+    M --> P
+    O --> P
 ```
 
-3. **Resposta a Incidente Integrada:**
-*   No **Dashboard**, um sinal de Card Crítico aparecerá identificando o netcat com Botões interativos para Abortar Processo.
-*   No **Terminal Host**, o aviso reativo irá pipocar:
+## 🚀 Detection Engines
+
+| Engine | Technology | Capability |
+|--------|-----------|------------|
+| **Watchdog FIM** | `inotify` + SHA-256 | Real-time file integrity monitoring with atomic baseline persistence |
+| **YARA Scanner** | `yara-python` | APT signature matching — backdoors, cryptominers, LOLBins, privilege escalation |
+| **Entropy Analyzer** | Shannon Entropy | Ransomware detection via cryptographic entropy analysis (threshold: 7.9/8.0) |
+| **Network HIDS** | `/proc/net/tcp` | Kernel-level socket monitoring with automatic `SIGSTOP` on rogue processes |
+| **NFQueue IPS** | `netfilterqueue` | Inline packet inspection with data exfiltration prevention |
+| **Suricata Connector** | `eve.json` tail | Real-time IPS alert integration with automatic IP blocking |
+| **VirusTotal Cloud** | API v3 | Cloud threat intelligence with rate-limited queries (4 req/min) |
+| **Web Dashboard** | Flask + REST API | Real-time C2 interface with dual-control threat extermination |
+
+## ⚡ Quick Start
+
+### Prerequisites
 ```bash
-[⚠️ REDE ALERTA] Backdoor Escutando (4444)!
+# Core (required)
+python3 -m pip install watchdog flask flask-cors
+
+# Optional engines
+python3 -m pip install yara-python        # YARA signatures
+python3 -m pip install netfilterqueue scapy  # Kernel IPS (requires root)
+```
+
+### Run
+
+```bash
+# 1. Create file integrity baseline
+python3 sentinel.py -b /path/to/protect
+
+# 2. Start monitoring (all engines boot automatically)
+sudo python3 sentinel.py -m /path/to/protect
+```
+
+> **Dashboard** opens automatically at `http://127.0.0.1:1337` — or open `dashboard/index.html` directly.
+
+### Using the startup script
+```bash
+chmod +x start.sh
+sudo ./start.sh -m /path/to/protect
+```
+
+## 🕹️ Dual-Control Response
+
+Threats can be neutralized through **two independent channels**:
+
+**Via Dashboard (Web C2):**
+- Real-time threat cards with `EXTERMINATE` buttons
+- Adaptive radar visualization (green → red during attacks)
+- Engine health monitoring
+
+**Via Terminal (CLI):**
+```bash
+[⚠️ REDE ALERTA] Backdoor Escutando TCP (4444)!
   └─> 🔬 Forense: Processo [nc] operando no PID (13238)
-  └─> ⚠️ EDR Dual-Control (Via Web ou CLI). Deseja MATAR o processo suspeito? [S/N]: s
-  └─> 💥 ALVO DERRUBADO! (Resolução instantânea)
+  └─> ❄️ AMEAÇA CONGELADA (SIGSTOP)!
+  └─> ⚠️ Deseja MATAR o programa 'nc'? [S/N]: s
+  └─> 💥 ALVO DERRUBADO!
 ```
 
+## ⚙️ Configuration
+
+Create `sentinel_config.json` (already in `.gitignore`):
+
+```json
+{
+    "vt_api_key": "YOUR_KEY",
+    "entropy_threshold": 7.9,
+    "trusted_ips": ["192.168.0.1", "127.0.0.1"],
+    "trusted_domains": ["ubuntu", "canonical", "google"],
+    "trusted_ip_ranges": ["185.125.", "91.189."],
+    "dashboard_port": 1337,
+    "natural_entropy_extensions": ["png", "jpg", "zip", "pdf", "mp4"],
+    "malicious_extensions": ["locked", "enc", "crypt", "ransom"]
+}
+```
+
+Or set environment variable: `export VT_API_KEY=your_key`
+
+## 🔒 Security Hardening (v10)
+
+- **Atomic baseline writes** — prevents data corruption on crash
+- **Log rotation** — 5MB max with 3 backup files
+- **Config validation** — rejects invalid ports and thresholds
+- **VT rate limiting** — respects free tier (15s between requests)
+- **Signal handling** — graceful cleanup on `SIGTERM`/`SIGINT`
+- **XSS protection** — HTML escaping on dashboard
+- **CORS hardening** — restricted to localhost origins
+
 ---
-`Engenharia e Defesa Arquitetada por` **[@Theus-TI]**
+
+`Engineered by` **[@Theus-TI](https://github.com/Theus-TI)**

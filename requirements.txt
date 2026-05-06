@@ -1,0 +1,6 @@
+watchdog>=3.0.0
+yara-python>=4.5.0
+flask>=3.0.0
+flask-cors>=4.0.0
+netfilterqueue>=0.9.0
+scapy>=2.5.0
